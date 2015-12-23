@@ -10,7 +10,7 @@ import math
 import scipy.stats
 import time
 import random
-import mail
+
 
 # def run():#主循环运算函数
 # 	sql="select distnict stockidA,stockidB from  model_data_model;"
@@ -49,6 +49,14 @@ def run(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,clos
 			open_.append(1)
 			
 			for j in range(i+1,len(lnA_B)):
+				if (close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i])< -0.005:
+					close_.append(j)
+					clsoe_stats.append("止损订单")
+					values.append((close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i]))
+					zhisun_value.append((close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i]))
+					zhisun_count=zhisun_count+1
+					zhisun_time.append(j-i)
+					break
 				if lnA_B[j]<scipy.stats.norm.ppf(0.9,avg_[i],stdev_[i])+lnA_B[i-1]:
 					#print(lnA_B[j],scipy.stats.norm.ppf(0.9,avg_[i],stdev_[i]),lnA_B_sub[i-1])
 					close_.append(j)
@@ -58,24 +66,6 @@ def run(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,clos
 					zhengtai_count=zhengtai_count+1
 					zhengtai_time.append(j-i)
 					break
-				if (close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i])< -0.005:
-					close_.append(j)
-					clsoe_stats.append("止损订单")
-					values.append((close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i]))
-					zhisun_value.append((close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i]))
-					zhisun_count=zhisun_count+1
-					zhisun_time.append(j-i)
-					break
-			#for j in range(i+1,len(lnA_B)):
-				# if (close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i])> 0.005:
-				# 	close_.append(j)
-				# 	clsoe_stats.append("止赢订单")
-				# 	values.append((close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i]))
-				# 	zhengtai_value.append((close_1[i]-close_1[j]+close_2[j]-close_2[i])/(close_1[i]+close_2[i]))
-				# 	zhengtai_count=zhisun_count+1
-				# 	zhengtai_time.append(j-i)
-				# 	break
-
 				if j==len(lnA_B)-1:
 					close_.append(0)
 					clsoe_stats.append(0)		
@@ -84,15 +74,6 @@ def run(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,clos
 		elif i>101 and pearson_[i-1]>0.9 and scipy.stats.norm.cdf(math.log(close_1[i]+commission)-math.log(close_2[i]-commission)-lnA_B[i-1],avg_[i],stdev_[i])<0.1 : #and abs(scipy.stats.norm.cdf(lnA_BaddC[i-1],avg_[i],stdev_[i])-scipy.stats.norm.cdf(lnA_BaddC[i],avg_[i],stdev_[i]))>0.5:
 			open_.append(1)
 			for j in range(i+1,len(lnA_B)):
-				if lnA_B[j]>scipy.stats.norm.ppf(0.1,avg_[i],stdev_[i])+lnA_B[i-1]:
-					close_.append(j)
-					clsoe_stats.append("正态交易")
-					values.append((close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i]))
-					zhengtai_value.append((close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i]))
-					zhengtai_count=zhengtai_count+1
-					zhengtai_time.append(j-i)
-					break
-
 				if (close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i])<-0.005:
 					close_.append(j)
 					clsoe_stats.append("止损订单")
@@ -101,15 +82,14 @@ def run(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,clos
 					zhisun_count=zhisun_count+1
 					zhisun_time.append(j-i)
 					break
-			#for j in range(i+1,len(lnA_B)):
-				# if (close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i])>0.005:
-				# 	close_.append(j)
-				# 	clsoe_stats.append("止赢订单")
-				# 	values.append((close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i]))
-				# 	zhengtai_value.append((close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i]))
-				# 	zhengtai_count=zhisun_count+1
-				# 	zhengtai_time.append(j-i)
-				#	break
+				if lnA_B[j]>scipy.stats.norm.ppf(0.1,avg_[i],stdev_[i])+lnA_B[i-1]:
+					close_.append(j)
+					clsoe_stats.append("正态交易")
+					values.append((close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i]))
+					zhengtai_value.append((close_1[j]-close_1[i]+close_2[i]-close_2[j])/(close_1[i]+close_2[i]))
+					zhengtai_count=zhengtai_count+1
+					zhengtai_time.append(j-i)
+					break
 				if j==len(lnA_B)-1:
 					close_.append(0)
 					clsoe_stats.append(0)		
@@ -145,15 +125,7 @@ def run(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,clos
 	#print(stockid_i,stockid_j)
 
 	write_result(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,close_1,close_2,norm_,pearson_,avg_,stdev_,sample,commission,norm_num,open_,close_,clsoe_stats,values)
-def writle_connt(word):
-	print(str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
-	file_object = open('ceshi53333.csv','a')
-	file_object.write(word+"\n")
-	file_object.close()
-def writle_title():
-	file_object = open('ceshi53333.csv','a')
-	file_object.write("\n"+"ida,idb,成功单数,失败单数,成功率,ln振幅,平均成功持仓时间,平均失败持仓时间,平均成功盈利,平均失败损失"+"\n")
-	file_object.close()
+
 def write_result(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,close_1,close_2,norm_,pearson_,avg_,stdev_,sample,commission,norm_num,open_,close_,clsoe_stats,values):
 	file_object = open('result.csv','w')
 
@@ -201,7 +173,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 	stdev_=[]
 	res_all=0
 	res_now=0
-	sql="SELECT stockid FROM stock_foreign.stock  where stockid in ('EURNZD','AUDNZD')  GROUP BY stockid ;"
+	sql="SELECT stockid FROM stock_foreign.stock  where stockid in ('GBPCAD','GBPSGD') GROUP BY stockid;"
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	#print(len(res))
@@ -218,11 +190,11 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 		for i in range(len(stockid)):
 			for j in range(len(stockid)):
 				if i<j:
-					print("第一次数据查询"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
+					print(0)
 					sql2="select DISTINCT a.date,a.time,a.close,b.close from stock a ,stock b where a.stockid='"+stockid[i]+"' and b.stockid='"+stockid[j]+"' and a.date=b.date and a.time=b.time ORDER BY  STR_TO_DATE(CONCAT(a.date,' ',a.TIME),'%Y.%c.%d %H:%i') "
 					cur_stock.execute(sql2)
 					res=cur_stock.fetchall()
-					print("第二次数据查询"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
+					print(1)
 					for r in res:
 						try:
 							stockid_i.append(stockid[i])
@@ -246,7 +218,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 							lnA_B_sub.append(lnA_B[r]-lnA_B[r-1])
 							#print(lnA_B[r],lnA_B[r-1],lnA_B_sub[r])
 						else:
-							lnA_B_sub.append(lnA_B[0])
+							lnA_B_sub.append(0)
 						if r>=sample:
 							
 							norm_.append(scipy.stats.norm.cdf(lnA_B_sub[r],sum(lnA_B_sub[r-sample:r])/sample,stdev(lnA_B_sub[r-sample:r])))
@@ -260,7 +232,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 							avg_.append("")
 							stdev_.append("")
 
-					print("第一次计算"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
+					print(3)
 					if len(close_1)>=sample:
 					
 						run(stockid_i,stockid_j,date1,time1,lnA_B,lnA_B_sub,lnA_BsubC,lnA_BaddC,close_1,close_2,norm_,pearson_,avg_,stdev_,sample,commission,norm_num)
@@ -275,7 +247,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 					# print(str(pearson(close_1[0:500],close_2[0:500])))
 					# print(str(pearson(per_1[0:500],per_2[0:500])))
 					# print(len(res))
-					print("第一次计算完成"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
+					print(4)
 					close_1=[]
 					close_2=[]
 					date1=[]
@@ -364,8 +336,8 @@ if __name__ == "__main__":
 	cur_check=conn.cursor()
 	cur_result_DB=conn.cursor()
 	cur_stock_releation=conn.cursor()
-	writle_title()
-	data_clear(100,0.0005,0.9)
+
+	data_clear(100,0.0006,0.9)
 
 
 

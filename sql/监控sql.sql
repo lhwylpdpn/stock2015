@@ -8,6 +8,10 @@ SELECT COUNT(*),MAX(releation) FROM `releation_mid`;
 /*查看关系表数据正确性*/
 
 
-SELECT stockid,DATE,TIME,COUNT(*) AS a FROM stock   GROUP BY STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i') ,stockid HAVING COUNT(*)>1
+SELECT stockid,DATE,TIME,COUNT(*) AS a FROM stock   GROUP BY STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i') ,stockid HAVING COUNT(*)>1;
 SHOW STATUS;
 
+
+SELECT * FROM stock GROUP BY STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i') DESC LIMIT 102
+
+SELECT * FROM `stock_back_allshuju` WHERE stockid='AUDCAD'

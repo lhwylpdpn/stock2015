@@ -38,8 +38,8 @@ def loadcsv_add():
 		sql=sql+"insert into stock_foreign.stock values ('"+name_[i]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"',0,0,'"+close[i]+"',0,0,null);"
 	#print(sql)
 	cur_stock.execute(sql)
-	releation_mid(100,"releation_mid_prev")
-	decision(name_,close,0.9,0.001)
+	releation_mid(5,"releation_mid_prev")
+	decision(name_,close,0.9,0.0006)
 	cur_stock.close()
 def loadcsv_add_clear():
 
@@ -58,6 +58,7 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 	stockid=[]
 	time1=[]
 	lnA_B=[]
+	lnA_B_sub=[]
 	a=[]
 	b=[]
 	#sql="SELECT stockid FROM stock_foreign.stock GROUP BY stockid;"
@@ -92,10 +93,16 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 							#print(math.log(float(r[3])))
 						except Exception as e:
 							print(str(r[1]),str(r[0]),"C端读入数据有问题")
+					for r in range(0,len(close_1)):
+						if r>0:
+
+							lnA_B_sub.append(lnA_B[r-1]-lnA_B[r])
+							#print(lnA_B[r],lnA_B[r-1],lnA_B_sub[r-1])
+					
 					if len(close_1)>=sample:
 					#print(pearson(close_1,close_2),close_1,close_2)
 						#print(lnA_B[0],close_1[0])
-						sql="insert into "+str(tablename)+" values('"+stockid[i]+"','"+stockid[j]+"','"+str(sample)+"','"+str(pearson(close_1[0:sample],close_2[0:sample]))+"','"+str(lnA_B[0])+"','"+str(sum(lnA_B[0:sample])/len(lnA_B[0:sample]))+"','"+str(stdev(lnA_B[0:sample]))+"','"+str(scipy.stats.norm.cdf(lnA_B[0],sum(lnA_B[1:sample+1])/len(lnA_B[1:sample+1]),stdev(lnA_B[1:sample+1])))+"','"+str(scipy.stats.norm.cdf(lnA_B[1],sum(lnA_B[2:sample+2])/len(lnA_B[2:sample+2]),stdev(lnA_B[2:sample+2])))+"');"
+						sql="insert into "+str(tablename)+" values('"+stockid[i]+"','"+stockid[j]+"','"+str(sample)+"','"+str(pearson(close_1[0:sample],close_2[0:sample]))+"','"+str(lnA_B[0])+"','"+str(sum(lnA_B_sub[0:sample])/len(lnA_B_sub[0:sample]))+"','"+str(stdev(lnA_B_sub[0:sample]))+"','"+str(scipy.stats.norm.cdf(lnA_B_sub[0],sum(lnA_B_sub[1:sample+1])/len(lnA_B_sub[1:sample+1]),stdev(lnA_B_sub[1:sample+1])))+"','"+str(scipy.stats.norm.cdf(lnA_B_sub[1],sum(lnA_B_sub[2:sample+2])/len(lnA_B_sub[2:sample+2]),stdev(lnA_B_sub[2:sample+2])))+"');"
 						cur_result.execute(sql)
 					else:
 						print(stockid[i],stockid[j],"并不够"+str(sample)+"条记录")
@@ -112,7 +119,7 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 					lnA_B=[]
 					date1=[]
 					time1=[]
-	
+					lnA_B_sub=[]
 def pearson(x,y):
 	stockid=[]
 	time1=[]
@@ -314,18 +321,18 @@ def decision(name,close,norm_list,commission):
 		print("文件读入的数据中结构不正确,name和close不匹配")
 	else:
 
-		sql="SELECT a.stockidA, a.stockidB ,a.releation ,a.lnA_B,a.avgA_B,a.stdA_B,b.`releation` FROM releation_mid a, releation_mid_prev b WHERE a.`stockidA`=b.`stockidA` AND a.`stockidB`=b.`stockidB`  and a.norm_ln_prev<0.9 and a.norm_ln_prev>0.1   AND a.norm_ln_prev2<0.9 AND a.norm_ln_prev2>0.1 "
+		sql="SELECT a.stockidA, a.stockidB ,a.releation ,a.lnA_B,a.avgA_B,a.stdA_B FROM releation_mid a"
 		cur_d.execute(sql)
 		res=cur_d.fetchall()
 		print("decision",len(res))
 		if len(res)>0:
 			for r in res:
 				
-				if float(r[6])>0.9 and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])+commission),float(r[4]),float(r[5]))>norm_list and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))<0.99:# and abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])) - scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))>0.5:#获取每一组A和B在参数的位置，并找出位置的close为现价，做计算后合并为lnA_B_now
-					print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5]))))
-					print(float(r[3]))
-					print(scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))
-					print(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])))
+				if float(r[2])>0.9 and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))])-commission)-math.log(float(close[name.index(str(r[1]))])+commission)-float(r[3]),float(r[4]),float(r[5]))>norm_list:# and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))]))-float(r[3]),float(r[4]),float(r[5]))<0.99:# and abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])) - scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))>0.5:#获取每一组A和B在参数的位置，并找出位置的close为现价，做计算后合并为lnA_B_now
+					#print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5]))))
+					#print(float(r[3]))
+					#print(scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))
+					#print(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])))
 					stockA.append(str(r[0]))
 					stockB.append(str(r[1]))
 					releation.append(float(r[2]))
@@ -333,14 +340,14 @@ def decision(name,close,norm_list,commission):
 					avgA_B.append(float(r[4]))
 					stdA_B.append(float(r[5]))
 					lnA_B_now.append(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])))
-					normA_B_now.append(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])+commission),float(r[4]),float(r[5])))
-					lnA_B_except.append(scipy.stats.norm.ppf(norm_list,float(r[4]),float(r[5])))
+					normA_B_now.append(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))])-commission)-math.log(float(close[name.index(str(r[1]))])+commission)-float(r[3]),float(r[4]),float(r[5])))
+					lnA_B_except.append(float(r[3])+scipy.stats.norm.ppf(norm_list,float(r[4]),float(r[5])))
 					orderid.append("0.9_0.99_"+str(time.time()+random.random()))
-				if float(r[6])>0.9 and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])-commission),float(r[4]),float(r[5]))<(1-norm_list) and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))>0.01:# and abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])) - scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))>0.5:#获取每一组A和B在参数的位置，并找出位置的close为现价，做计算后合并为lnA_B_now
+				if float(r[2])>0.9 and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))])+commission)-math.log(float(close[name.index(str(r[1]))])-commission)-float(r[3]),float(r[4]),float(r[5]))<(1-norm_list):#and scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))]))-float(r[3]),float(r[4]),float(r[5]))>0.01:# and abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])) - scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))>0.5:#获取每一组A和B在参数的位置，并找出位置的close为现价，做计算后合并为lnA_B_now
 					print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5]))))
-					print(float(r[3]))
-					print(scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))
-					print(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])))
+					#print(float(r[3]))
+					#print(scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))
+					#print(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5])))
 					stockA.append(str(r[1]))
 					stockB.append(str(r[0]))
 					releation.append(float(r[2]))
@@ -348,8 +355,8 @@ def decision(name,close,norm_list,commission):
 					avgA_B.append(float(r[4]))
 					stdA_B.append(float(r[5]))
 					lnA_B_now.append(-math.log(float(close[name.index(str(r[0]))]))+math.log(float(close[name.index(str(r[1]))])))
-					normA_B_now.append(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])-commission),float(r[4]),float(r[5])))
-					lnA_B_except.append(-scipy.stats.norm.ppf((1-norm_list),float(r[4]),float(r[5])))
+					normA_B_now.append(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))])+commission)-math.log(float(close[name.index(str(r[1]))])-commission)-float(r[3]),float(r[4]),float(r[5])))
+					lnA_B_except.append(-float(r[3])-scipy.stats.norm.ppf((1-norm_list),float(r[4]),float(r[5])))
 					orderid.append("0.9_0.01_"+str(time.time()+random.random()))
 			#print(normA_B_now)
 		#如果releation>0.9 且 norm>0.99 就可以满足下单
