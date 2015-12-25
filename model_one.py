@@ -503,7 +503,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 	norm_lncha=[]
 	res_all=0
 	res_now=0
-	sql="SELECT stockid FROM stock_foreign.stock_back_allshuju   GROUP BY stockid ;"
+	sql="SELECT stockid FROM stock_foreign.stock  GROUP BY stockid ;"
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	#print(len(res))
@@ -519,7 +519,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 		for i in range(len(stockid)):
 	
 			print("第一次数据查询"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
-			sql2="select DISTINCT a.date,a.time,a.close from stock_back_allshuju a   where a.stockid='"+stockid[i]+"'   ORDER BY  STR_TO_DATE(CONCAT(a.date,' ',a.TIME),'%Y.%c.%d %H:%i') "
+			sql2="select DISTINCT a.date,a.time,a.close from stock  a   where a.stockid='"+stockid[i]+"'   ORDER BY  STR_TO_DATE(CONCAT(a.date,' ',a.TIME),'%Y.%c.%d %H:%i') "
 			cur_stock.execute(sql2)
 			res=cur_stock.fetchall()
 			print("第二次数据查询"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))

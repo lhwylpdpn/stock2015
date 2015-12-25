@@ -171,7 +171,7 @@ if __name__ == "__main__":
 	conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
 	cur_stock=conn.cursor()
 	cur_result=conn.cursor()
-	releation_mid(100,"releation_mid")
+	#releation_mid(100,"releation_mid")
 	conn.commit()
 	cur_stock.close()
 	cur_result.close()
