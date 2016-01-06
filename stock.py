@@ -46,7 +46,7 @@ def loadcsv ():#核心函数，查URL写数据库,计算指标库
 			close.append(row[5])
 			amount.append(row[6])
 		for i in range(len(date_)):
-			sql=sql+"insert into stock_foreign.stock values ('"+filename[0:6]+"','"+date_[i]+"','"+time_[i]+"',null,null,null,'"+close[i]+"',null,0,null);"
+			#sql=sql+"insert into stock_foreign.stock values ('"+filename[0:6]+"','"+date_[i]+"','"+time_[i]+"',null,null,null,'"+close[i]+"',null,0,null);"
 			sql=sql+"insert into stock_foreign.stock_back_allshuju values ('"+filename[0:6]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"','"+high[i]+"','"+low[i]+"','"+close[i]+"',null,0,null);"
 
 		cur_stock.execute(sql)
@@ -108,58 +108,15 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 	a=[]
 	b=[]
 	#sql="SELECT stockid FROM stock_foreign.stock GROUP BY stockid;"
-	sql="SELECT stockid FROM stock_foreign.stock GROUP BY stockid;"
+	sql="SELECT stockid FROM stock_foreign.stock_back_allshuju GROUP BY stockid;"
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	print(str(tablename)+"函数内取出的值",len(res))
 	if len(res)>1:
 		dict1={}
-		sql="DELETE FROM stock WHERE STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i')<DATE_ADD(NOW(),INTERVAL -5 DAY);"
+		sql="DELETE FROM stock_back_allshuju WHERE STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i')<DATE_ADD(NOW(),INTERVAL -5 DAY);"
 		cur_result.execute(sql)
-		for r in res:
-			stockid.append(r[0])
-		for i in range(len(stockid)):
-			for j in range(len(stockid)):
-				if i<j:
-
-					
-					sql="select DISTINCT a.date,a.time,a.close,b.close from stock a ,stock b where a.stockid='"+stockid[i]+"' and b.stockid='"+stockid[j]+"' and a.date=b.date and a.time=b.time ORDER BY  STR_TO_DATE(CONCAT(a.date,' ',a.TIME),'%Y.%c.%d %H:%i') desc LIMIT "+str(sample+2)
-					cur_stock.execute(sql)
-					res=cur_stock.fetchall()
-					for r in res:
-						try:
-							#print(str(r[1]))
-							lnA_B.append(math.log(float(r[2])) - math.log(float(r[3])))
-							close_1.append(float(r[2]))
-							close_2.append(float(r[3]))
-							date1.append(str(r[0]))
-							time1.append(str(r[1]))
-							#print(float(r[2]),float(r[3]),str(r[0]),str(r[1]))
-							#print(math.log(float(r[2])))
-							#print(math.log(float(r[3])))
-						except Exception as e:
-							print(str(r[1]),str(r[0]),"C端读入数据有问题")
-					if len(close_1)>=sample:
-					#print(pearson(close_1,close_2),close_1,close_2)
-						#print(lnA_B[0],close_1[0])
-						sql="insert into "+str(tablename)+" values('"+stockid[i]+"','"+stockid[j]+"','"+str(sample)+"','"+str(pearson(close_1[0:sample],close_2[0:sample]))+"','"+str(lnA_B[0])+"','"+str(sum(lnA_B[0:sample])/len(lnA_B[0:sample]))+"','"+str(stdev(lnA_B[0:sample]))+"','"+str(scipy.stats.norm.cdf(lnA_B[0],sum(lnA_B[1:sample+1])/len(lnA_B[1:sample+1]),stdev(lnA_B[1:sample+1])))+"','"+str(scipy.stats.norm.cdf(lnA_B[1],sum(lnA_B[2:sample+2])/len(lnA_B[2:sample+2]),stdev(lnA_B[2:sample+2])))+"');"
-						cur_result.execute(sql)
-					else:
-						print(stockid[i],stockid[j],"并不够"+str(sample)+"条记录")
-					# print(str(pearson(close_1,close_2)))
-					# print(str(pearson(per_1,per_2)))
-					# print(str(pearson(close_1[0:30],close_2[0:30])))
-					# print(str(pearson(per_1[0:30],per_2[0:30])))
-					# print(str(pearson(close_1[0:500],close_2[0:500])))
-					# print(str(pearson(per_1[0:500],per_2[0:500])))
-					# print(len(res))
-
-					close_1=[]
-					close_2=[]
-					lnA_B=[]
-					date1=[]
-					time1=[]
-	
+		
 if __name__ == "__main__":
 	time1=time.time()
 	conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)

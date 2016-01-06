@@ -60,13 +60,13 @@ def load_report():
 		#决策函数
 		
 		for i in range(len(nameA)):
-			writelog("平仓订单"+nameA[i]+","+nameB[i]+","+order_type[i])
+			writelog("平仓订单"+nameA[i]+","+order_type[i])
 			sql=sql+"insert into stock_foreign.order_result values (null,'"+nameA[i]+"','"+openA[i]+"','"+openA_time[i]+"','"+closeA[i]+"','"+closeA_time[i]+"','"+lots_A[i]+"',null,'null','null','null','unll','null','"+order_type[i]+"','"+orderid[i]+"','"+ln_e_open[i]+"','"+ln_e_close[i]+"');"
 		#print(sql)
 		csvfile.close()
 		time.sleep(3)
 		os.remove("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order/"+filename)
-		#cur_stock.execute(sql)
+		cur_stock.execute(sql)
 def writelog(str):
 	file=open("mail_result.ini","a")
 	file.write(str+"\n")
@@ -75,24 +75,24 @@ def writelog(str):
 
 if __name__ == "__main__":
 
-	while(1):
+	while(3):
 		if len(getFileList("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order"))>0:
+			
+			conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
+			cur_stock=conn.cursor()
+			cur_result=conn.cursor()
+			cur_d=conn.cursor()
+			cur_check=conn.cursor()
+			cur_result_DB=conn.cursor()
+			cur_stock_releation=conn.cursor()
 			load_report()
-			# conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
-			# cur_stock=conn.cursor()
-			# cur_result=conn.cursor()
-			# cur_d=conn.cursor()
-			# cur_check=conn.cursor()
-			# cur_result_DB=conn.cursor()
-			# cur_stock_releation=conn.cursor()
-			# load_report()
-			# mail.run("mail_result.ini","有平仓订单,请查看,具体内容暂时没打印")
-			# cur_check.close()
-			# cur_result.close()
-			# cur_d.close()
-			# cur_check.close()
-			# cur_stock_releation.close()
-			# conn.commit()
-			# conn.close()
+			#mail.run("mail_result.ini","有平仓订单,请查看,具体内容暂时没打印")
+			cur_check.close()
+			cur_result.close()
+			cur_d.close()
+			cur_check.close()
+			cur_stock_releation.close()
+			conn.commit()
+			conn.close()
 	
 

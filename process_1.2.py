@@ -32,7 +32,8 @@ def loadcsv_add():
 		open_.append(row[2])
 		close.append(row[3])
 	#决策函数
-	decision(name_,close,0.9,0.001)
+	decision(name_,close,0.88,0.0008)
+	print(len(date_))
 	for i in range(len(date_)):
 				
 		sql=sql+"insert into stock_foreign.stock values ('"+name_[i]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"',0,0,'"+close[i]+"',0,0,null);"
@@ -66,13 +67,17 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 	print(str(tablename)+"函数内取出的值",len(res))
 	if len(res)>0:
 		dict1={}
-		sql="INSERT INTO `releation_mid_record` SELECT SYSDATE(), stockid,sample,close_now,avgA_B,stdA_B,norm_ln_prev,norm_ln_prev2,avg_cha,std_cha,norm_cha_prev, norm_cha_prev2 FROM `releation_mid`; DELETE FROM `releation_mid`;"
+		sql="INSERT INTO `releation_mid_record` SELECT SYSDATE(), stockid,sample,close_now,avgA_B,stdA_B,norm_ln_prev,norm_ln_prev2,avg_cha,std_cha,norm_cha_prev, norm_cha_prev2 FROM `releation_mid`; "
+		cur_result.execute(sql)
+		sql="DELETE FROM `releation_mid`;"
 		cur_result.execute(sql)
 		for r in res:
-			stockid.append(r[0])		
+			stockid.append(r[0])
+
 		for i in range(len(stockid)):
 		
 			sql=" SELECT DISTINCT a.date,a.time,a.close FROM stock a   WHERE a.stockid= '"+stockid[i]+ "'  ORDER BY  STR_TO_DATE(CONCAT(a.date,' ',a.TIME),'%Y.%c.%d %H:%i') DESC LIMIT "+str(sample+3)
+			#print(sql)
 			cur_stock.execute(sql)
 			res=cur_stock.fetchall()
 			for r in res:
@@ -90,6 +95,7 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 					
 				
 			#print(lnA_B_sub[0:sample])
+			#print(len(close_1))
 			if len(close_1)>=sample:
 				#print(sum(close_1[2:close_1+2]))
 				sql="insert into "+str(tablename)+" values('"+stockid[i]+"','"+str(sample)+"','"+str(close_1[0])+"','"+str(sum(close_1[0:sample])/len(close_1[0:sample]))+"','"+str(stdev(close_1[0:sample]))+"','"+str(scipy.stats.norm.cdf(close_1[0],sum(close_1[1:sample+1])/len(close_1[1:sample+1]),stdev(close_1[1:sample+1])))+"','"+str(scipy.stats.norm.cdf(close_1[1],sum(close_1[2:sample+2])/len(close_1[2:sample+2]),stdev(close_1[2:sample+2])))+"','"+str(sum(lnA_B_sub[0:sample])/len(lnA_B_sub[0:sample]))+"','"+str(stdev(lnA_B_sub[0:sample]))+"','"+str(scipy.stats.norm.cdf(lnA_B_sub[0],sum(lnA_B_sub[1:sample+1])/len(lnA_B_sub[1:sample+1]),stdev(lnA_B_sub[1:sample+1])))+"','"+str(scipy.stats.norm.cdf(lnA_B_sub[1],sum(lnA_B_sub[2:sample+2])/len(lnA_B_sub[2:sample+2]),stdev(lnA_B_sub[2:sample+2])))+"');"
@@ -163,7 +169,7 @@ def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
 	json=""
 	writelog("有订单生成，订单数"+str(len(stockid)))
 	for r in range(len(stockid)):
-		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(round(lnA_B_now[r]/100,3))+","+str(orderid[r][0:3])+"\n"
+		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(round(lnA_B_now[r]/150,3))+","+str(orderid[r][0:3])+"\n"
 
 	print("有订单生成",orderid,stockid)
 	file_object.write(json)
@@ -173,7 +179,7 @@ def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
 def result_DB(stockid,lnA_B_now,lnA_B_except,norm_now,norm_cha,orderid):
 	sql=""
 	for r in range(len(stockid)):
-		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(round(lnA_B_now[r]/100,3))+"');"
+		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(round(lnA_B_now[r]/150,3))+"');"
 	cur_result_DB.execute(sql)
 	cur_result_DB.close()
 
@@ -203,13 +209,13 @@ def decision(name,close,norm_list,commission):
 		print("文件读入的数据中结构不正确,name和close不匹配")
 	else:
 
-		sql="SELECT a.stockid,a.close_now,a.avgA_B,a.stdA_B,a.norm_ln_prev,a.norm_ln_prev2,a.avg_cha,a.std_cha,a.norm_cha_prev,a.norm_cha_prev2,b.flag FROM `releation_mid` a ,model_config b where a.stockid=b.stockid"
+		sql="SELECT a.stockid,a.close_now,a.avgA_B,a.stdA_B,a.norm_ln_prev,a.norm_ln_prev2,a.avg_cha,a.std_cha,a.norm_cha_prev,a.norm_cha_prev2,b.flag FROM `releation_mid` a ,model_config b where a.stockid=b.stockid and b.open_status=1"
 		cur_d.execute(sql)
 		res=cur_d.fetchall()
 		print("decision",len(res))
 		if len(res)>0:
 			for r in res:
-				if scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))+float(r[8])+float(r[9])>0.8*3 or  scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))+float(r[8])+float(r[9])<0.2*3 :
+				if scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))+float(r[8])+float(r[9])>0.9*3 or  scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))+float(r[8])+float(r[9])<0.1*3 :
 					update_flag.append(0)
 					update_stockid.append(str(r[0]))
 				else:
@@ -230,9 +236,9 @@ def decision(name,close,norm_list,commission):
 					lnA_B.append(float(r[1]))
 					avgA_B.append(float(r[2]))
 					stdA_B.append(float(r[3]))
-					lnA_B_now.append(float(r[1]))
+					lnA_B_now.append(float(close[name.index(str(r[0]))]))
 					norm_now.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3])))
-					lnA_B_except.append(scipy.stats.norm.ppf(norm_list,float(r[2]),float(r[3])))
+					lnA_B_except.append(scipy.stats.norm.ppf(norm_list-0.03,float(r[2]),float(r[3])))
 					orderid.append("0.9_"+str(time.time()+random.random()))
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
 
@@ -246,9 +252,9 @@ def decision(name,close,norm_list,commission):
 					lnA_B.append(float(r[1]))
 					avgA_B.append(float(r[2]))
 					stdA_B.append(float(r[3]))
-					lnA_B_now.append(float(r[1]))
+					lnA_B_now.append(float(close[name.index(str(r[0]))]))
 					norm_now.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3])))
-					lnA_B_except.append(scipy.stats.norm.ppf((1-norm_list),float(r[2]),float(r[3])))
+					lnA_B_except.append(scipy.stats.norm.ppf((1-norm_list+0.03),float(r[2]),float(r[3]))+commission)
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
 					orderid.append("0.1_"+str(time.time()+random.random()))
 			#print(norm_now)
@@ -277,8 +283,8 @@ def checkDB():
 		if len(res)>0:
 			for r in res:
 				writelog("两次数据时间分别是："+str(r[0])+","+str(r[1]))
-				tag2=r[1]-17
-
+				#tag2=r[1]-17
+		tag2=0
 		tag3=0
 		sql="SELECT count(a) FROM (SELECT stockid,DATE,TIME,COUNT(*) AS a FROM stock   GROUP BY STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i') ,stockid HAVING COUNT(*)>1) a;"
 		cur_check.execute(sql)
@@ -334,13 +340,13 @@ if __name__ == "__main__":
 			releation_mid(100,"releation_mid")
 			print("step2 releation_mid完成"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 			writelog("计算相关性用时"+str(time.time()-time2))
-			time.sleep(80)
+			time.sleep(100)
 			#print(scipy.stats.norm.cdf(3,1,2))
 			loadcsv_add_clear()
 			print("step3 loadcsv_add_clear完成"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 			writelog("整体用时"+str(time.time()-time1))
 
-			mail.run("mail.ini","测试结果,"+checkDB()+",邮件发出时间"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))#test()
+			#mail.run("mail.ini","您好，当前时间的,"+checkDB())#test()
 			cur_stock.close()
 			cur_update_stock.close()
 			cur_result.close()
