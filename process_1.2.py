@@ -12,7 +12,7 @@ import time
 import random
 import mail
 def checktick():
-	filename='C:/Program Files (x86)/MetaTrader 4/MQL4/Files/tick.csv'
+	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/tick.csv'
 	reader =os.path.getsize(filename)
 	writelog("tick函数运行情况："+str(reader))
 
@@ -22,7 +22,7 @@ def loadcsv_add():
 	name_=[]
 	date_=[]
 	time_=[]
-	filename='C:/Program Files (x86)/MetaTrader 4/MQL4/Files/price_record.csv'
+	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv'
 	sql=""
 	reader = csv.reader(open(filename))
 	for row in reader:
@@ -32,7 +32,7 @@ def loadcsv_add():
 		open_.append(row[2])
 		close.append(row[3])
 	#决策函数
-	decision(name_,close,0.88,0.0008)
+	decision(name_,close,0.88,0.0007)
 	print(len(date_))
 	for i in range(len(date_)):
 				
@@ -42,11 +42,11 @@ def loadcsv_add():
 
 def loadcsv_add_clear():
 
-	filename='C:/Program Files (x86)/MetaTrader 4/MQL4/Files/price_record.csv'
+	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv'
 	file_object = open(filename,'w')
 	file_object.write("")
 	file_object.close()
-	filename='C:/Program Files (x86)/MetaTrader 4/MQL4/Files/tick.csv'
+	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/tick.csv'
 	file_object = open(filename,'w')
 	file_object.write("")
 	file_object.close()
@@ -165,7 +165,7 @@ def stdev(self):
 
 
 def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
-	file_object = open("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/create.txt",'w')
+	file_object = open("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/create.txt",'w')
 	json=""
 	writelog("有订单生成，订单数"+str(len(stockid)))
 	for r in range(len(stockid)):
@@ -269,36 +269,9 @@ def writelog(str):
 	file.write(str+"\n")
 	file.close()
 def checkDB():
-		sql="SELECT SUM(a.a-b.a+1),a.stockid FROM tempone a, (SELECT COUNT(*) AS a,stockid FROM stock GROUP BY stockid) b  WHERE a.`stockid`= b.stockid;DROP   TABLE tempone;CREATE  TABLE  tempone SELECT COUNT(*) AS a,stockid FROM stock GROUP BY stockid;"
-		cur_check.execute(sql)
-		res=cur_check.fetchall()
-		if len(res)>0:
-			for r in res:
-				writelog("入库数据量差别，正常值为17："+str(r[0]))
-				tag1=r[0]
-		sql=" SELECT STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i'),COUNT(*) FROM stock GROUP BY STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i') DESC LIMIT 1;"
-		cur_check.execute(sql)
 
-		res=cur_check.fetchall()
-		if len(res)>0:
-			for r in res:
-				writelog("两次数据时间分别是："+str(r[0])+","+str(r[1]))
-				#tag2=r[1]-17
-		tag2=0
-		tag3=0
-		sql="SELECT count(a) FROM (SELECT stockid,DATE,TIME,COUNT(*) AS a FROM stock   GROUP BY STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i') ,stockid HAVING COUNT(*)>1) a;"
-		cur_check.execute(sql)
-		res=cur_check.fetchall()
-		if len(res)>0:
-			for r in res:
-				print("重复数据，应该为0 ：",str(r[0]))
-				writelog("重复数据，应该为0 ："+str(r[0]))
-				tag4=r[0]
-		print(tag1,tag2,tag3,tag4)
-		if tag1+tag2+tag3+tag4==0:
-			return "程序运行稳定" 
-		else:
-			return "程序运行有误，请查看"
+	return "程序运行稳定" 
+
 		#if len(res)>0:
 			#for r in res:
 				#writelog("总共相关计算数："+str(r[0])+",最大相关数:"+str(r[1]))
@@ -306,7 +279,7 @@ def checkDB():
 if __name__ == "__main__":
 
 	while(1):
-		if (os.path.getsize("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/price_record.csv")!=0):
+		if (os.path.getsize("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv")!=0):
 			conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
 			cur_stock=conn.cursor()
 			cur_result=conn.cursor()
@@ -315,6 +288,7 @@ if __name__ == "__main__":
 			cur_stock_releation=conn.cursor()
 			cur_result_DB=conn.cursor()
 			cur_update_stock=conn.cursor()
+			time.sleep(2)
 			print("step0 有文件生成"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 			checktick()
 			time1=time.time()
@@ -346,7 +320,7 @@ if __name__ == "__main__":
 			print("step3 loadcsv_add_clear完成"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 			writelog("整体用时"+str(time.time()-time1))
 
-			#mail.run("mail.ini","您好，当前时间的,"+checkDB())#test()
+			mail.run("mail.ini",checkDB()+",我自己的测试结果测试结果,当前时间的")
 			cur_stock.close()
 			cur_update_stock.close()
 			cur_result.close()

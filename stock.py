@@ -47,7 +47,7 @@ def loadcsv ():#核心函数，查URL写数据库,计算指标库
 			amount.append(row[6])
 		for i in range(len(date_)):
 			#sql=sql+"insert into stock_foreign.stock values ('"+filename[0:6]+"','"+date_[i]+"','"+time_[i]+"',null,null,null,'"+close[i]+"',null,0,null);"
-			sql=sql+"insert into stock_foreign.stock_back_allshuju values ('"+filename[0:6]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"','"+high[i]+"','"+low[i]+"','"+close[i]+"',null,0,null);"
+			sql=sql+"insert into stock_foreign.stock_back values ('"+filename[0:9]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"','"+high[i]+"','"+low[i]+"','"+close[i]+"',null,0,null);"
 
 		cur_stock.execute(sql)
 		sql=""
@@ -108,13 +108,13 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 	a=[]
 	b=[]
 	#sql="SELECT stockid FROM stock_foreign.stock GROUP BY stockid;"
-	sql="SELECT stockid FROM stock_foreign.stock_back_allshuju GROUP BY stockid;"
+	sql="SELECT stockid FROM stock_foreign.stock_back  GROUP BY stockid;"
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	print(str(tablename)+"函数内取出的值",len(res))
 	if len(res)>1:
 		dict1={}
-		sql="DELETE FROM stock_back_allshuju WHERE STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i')<DATE_ADD(NOW(),INTERVAL -5 DAY);"
+		sql="DELETE FROM stock_back WHERE STR_TO_DATE(CONCAT(DATE,' ',TIME),'%Y.%c.%d %H:%i')<DATE_ADD(NOW(),INTERVAL -5 DAY);"
 		cur_result.execute(sql)
 		
 if __name__ == "__main__":

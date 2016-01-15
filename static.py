@@ -25,7 +25,7 @@ def getFileList( p ):
 
 def load_report():
 	s=os.getcwd()
-	for filename in getFileList("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order"):
+	for filename in getFileList("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/order"):
 		nameA=[]
 		openA=[]
 		openA_time=[]
@@ -43,8 +43,8 @@ def load_report():
 		ln_e_open=[]
 		ln_e_close=[]
 		sql=""
-		shutil.copy("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order/"+filename,"C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order/test/"+filename)
-		csvfile=open("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order/test/"+filename)
+		shutil.copy("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/order/"+filename,"C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/order/test/"+filename)
+		csvfile=open("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/order/test/"+filename)
 		reader = csv.reader(csvfile)
 		for row in reader:
 			nameA.append(row[0])
@@ -65,7 +65,7 @@ def load_report():
 		#print(sql)
 		csvfile.close()
 		time.sleep(3)
-		os.remove("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order/"+filename)
+		os.remove("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/order/"+filename)
 		cur_stock.execute(sql)
 def writelog(str):
 	file=open("mail_result.ini","a")
@@ -76,7 +76,7 @@ def writelog(str):
 if __name__ == "__main__":
 
 	while(3):
-		if len(getFileList("C:/Program Files (x86)/MetaTrader 4/MQL4/Files/order"))>0:
+		if len(getFileList("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/order"))>0:
 			
 			conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
 			cur_stock=conn.cursor()

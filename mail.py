@@ -3,10 +3,10 @@ import smtplib
 import time
 from email.mime.text import MIMEText  
 
-mail_host="smtp.qq.com"  #设置服务器
-mail_user="58254451"    #用户名
-mail_pass="lhwylpdpn"   #口令 
-mail_postfix="qq.com"  #发件箱的后缀
+mail_host="smtp.126.com"  #设置服务器
+mail_user="manyadaibao"    #用户名
+mail_pass="59421ting"   #口令 
+mail_postfix="126.com"  #发件箱的后缀
    
 def send_mail(sub,content):  
     to_list=["58254451@qq.com"]
@@ -40,4 +40,4 @@ def run(logname,title):
     file.close()
 
 if __name__ == '__main__':
-    run()
+    send_mail("测试下邮箱","".join("13122212112112"))
