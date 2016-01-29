@@ -16,23 +16,6 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`stock_foreign` /*!40100 DEFAULT CHARACT
 
 USE `stock_foreign`;
 
-/*Table structure for table `bushuju` */
-
-DROP TABLE IF EXISTS `bushuju`;
-
-CREATE TABLE `bushuju` (
-  `stockid` varchar(100) DEFAULT NULL,
-  `date` varchar(45) DEFAULT NULL,
-  `time` varchar(45) DEFAULT NULL,
-  `open_` float DEFAULT NULL,
-  `high` float DEFAULT NULL,
-  `low` float DEFAULT NULL,
-  `close` float DEFAULT NULL,
-  `amount` float DEFAULT NULL,
-  `per` varchar(50) DEFAULT NULL,
-  `tag` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 /*Table structure for table `model_config` */
 
 DROP TABLE IF EXISTS `model_config`;
@@ -41,25 +24,6 @@ CREATE TABLE `model_config` (
   `stockid` varchar(45) DEFAULT NULL,
   `flag` int(100) DEFAULT NULL,
   `open_status` int(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `model_data_model` */
-
-DROP TABLE IF EXISTS `model_data_model`;
-
-CREATE TABLE `model_data_model` (
-  `stockidA` varchar(45) DEFAULT NULL,
-  `stockidB` varchar(45) DEFAULT NULL,
-  `sample` varchar(45) DEFAULT NULL,
-  `releation` varchar(45) DEFAULT NULL,
-  `ln` varchar(45) DEFAULT NULL,
-  `lnA_B-C` varchar(45) DEFAULT NULL,
-  `lnA_B+C` varchar(45) DEFAULT NULL,
-  `C` varchar(45) DEFAULT NULL,
-  `norm` varchar(45) DEFAULT NULL,
-  `norm_num` varchar(45) DEFAULT NULL,
-  `date` varchar(45) DEFAULT NULL,
-  `time` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `order` */
@@ -118,7 +82,7 @@ CREATE TABLE `order_result` (
   `ln_e_open` varchar(50) DEFAULT NULL,
   `ln_e_close` varchar(50) DEFAULT NULL,
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=244 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1167 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `releation_mid` */
 
@@ -224,94 +188,6 @@ CREATE TABLE `stock_back` (
   KEY `stockid` (`stockid`,`date`,`time`),
   KEY `stockid_2` (`stockid`),
   KEY `date` (`date`,`time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `stock_back_allshuju` */
-
-DROP TABLE IF EXISTS `stock_back_allshuju`;
-
-CREATE TABLE `stock_back_allshuju` (
-  `stockid` varchar(100) DEFAULT NULL,
-  `date` varchar(45) DEFAULT NULL,
-  `time` varchar(45) DEFAULT NULL,
-  `open_` float DEFAULT NULL,
-  `high` float DEFAULT NULL,
-  `low` float DEFAULT NULL,
-  `close` float DEFAULT NULL,
-  `amount` float DEFAULT NULL,
-  `per` varchar(50) DEFAULT NULL,
-  `tag` int(11) DEFAULT NULL,
-  KEY `stockid` (`stockid`),
-  KEY `date` (`date`,`time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `stock_fenxi` */
-
-DROP TABLE IF EXISTS `stock_fenxi`;
-
-CREATE TABLE `stock_fenxi` (
-  `stockid` varchar(100) DEFAULT NULL,
-  `date` varchar(45) DEFAULT NULL,
-  `time` varchar(45) DEFAULT NULL,
-  `open_` float DEFAULT NULL,
-  `high` float DEFAULT NULL,
-  `low` float DEFAULT NULL,
-  `close` float DEFAULT NULL,
-  `amount` float DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `stock_temp` */
-
-DROP TABLE IF EXISTS `stock_temp`;
-
-CREATE TABLE `stock_temp` (
-  `stockid` varchar(100) DEFAULT NULL,
-  `date` varchar(45) DEFAULT NULL,
-  `time` varchar(45) DEFAULT NULL,
-  `open_` float DEFAULT NULL,
-  `high` float DEFAULT NULL,
-  `low` float DEFAULT NULL,
-  `close` float DEFAULT NULL,
-  `amount` float DEFAULT NULL,
-  KEY `riqisuoyi` (`date`,`time`),
-  KEY `stockid` (`stockid`),
-  KEY `riqi2` (`time`),
-  KEY `riqi3` (`date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `tempone` */
-
-DROP TABLE IF EXISTS `tempone`;
-
-CREATE TABLE `tempone` (
-  `a` bigint(21) NOT NULL DEFAULT '0',
-  `stockid` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `temptwo` */
-
-DROP TABLE IF EXISTS `temptwo`;
-
-CREATE TABLE `temptwo` (
-  `TIME` varchar(45) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `test` */
-
-DROP TABLE IF EXISTS `test`;
-
-CREATE TABLE `test` (
-  `stockid` varchar(45) DEFAULT NULL,
-  `sample` varchar(45) DEFAULT NULL,
-  `close_now` float DEFAULT NULL,
-  `avgA_B` float DEFAULT NULL,
-  `stdA_B` float DEFAULT NULL,
-  `norm_ln_prev` varchar(45) DEFAULT NULL,
-  `norm_ln_prev2` varchar(45) DEFAULT NULL,
-  `avg_cha` float DEFAULT NULL,
-  `std_cha` float DEFAULT NULL,
-  `norm_cha_prev` varchar(45) DEFAULT NULL,
-  `norm_cha_prev2` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

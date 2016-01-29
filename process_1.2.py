@@ -24,13 +24,20 @@ def loadcsv_add():
 	time_=[]
 	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv'
 	sql=""
-	reader = csv.reader(open(filename))
+	try:
+		filenode=open(filename)
+	except Exception as e:
+		print("Exception 了")
+		time.sleep(10)
+		filenode=open(filename)
+	reader = csv.reader(filenode)
 	for row in reader:
 		name_.append(row[0])
 		date_.append(row[1][0:10])
 		time_.append(row[1][11:16])
 		open_.append(row[2])
 		close.append(row[3])
+	filenode.close()
 	#决策函数
 	decision(name_,close,0.88,0.0007)
 	print(len(date_))
@@ -41,15 +48,13 @@ def loadcsv_add():
 	cur_stock.close()
 
 def loadcsv_add_clear():
-
+	# filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/tick.csv'
+	# file_object = open(filename,'w')
+	# file_object.write("")
+	# file_object.close()
 	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv'
-	file_object = open(filename,'w')
-	file_object.write("")
-	file_object.close()
-	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/tick.csv'
-	file_object = open(filename,'w')
-	file_object.write("")
-	file_object.close()
+	os.remove(filename)
+
 def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 	close_1=[]
 	close_2=[]
@@ -169,7 +174,7 @@ def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
 	json=""
 	writelog("有订单生成，订单数"+str(len(stockid)))
 	for r in range(len(stockid)):
-		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(round(lnA_B_now[r]/150,3))+","+str(orderid[r][0:3])+"\n"
+		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(round(lnA_B_now[r]/100,3))+","+str(orderid[r][0:3])+"\n"
 
 	print("有订单生成",orderid,stockid)
 	file_object.write(json)
@@ -179,7 +184,7 @@ def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
 def result_DB(stockid,lnA_B_now,lnA_B_except,norm_now,norm_cha,orderid):
 	sql=""
 	for r in range(len(stockid)):
-		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(round(lnA_B_now[r]/150,3))+"');"
+		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(round(lnA_B_now[r]/100,3))+"');"
 	cur_result_DB.execute(sql)
 	cur_result_DB.close()
 
@@ -279,7 +284,7 @@ def checkDB():
 if __name__ == "__main__":
 
 	while(1):
-		if (os.path.getsize("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv")!=0):
+		if (os.path.exists("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv")!=0):
 			conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
 			cur_stock=conn.cursor()
 			cur_result=conn.cursor()
@@ -288,11 +293,12 @@ if __name__ == "__main__":
 			cur_stock_releation=conn.cursor()
 			cur_result_DB=conn.cursor()
 			cur_update_stock=conn.cursor()
-			time.sleep(2)
+			#time.sleep(2)
+			loadcsv_add()
 			print("step0 有文件生成"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 			checktick()
 			time1=time.time()
-			loadcsv_add()
+			
 			cur_result_DB.close()
 			cur_update_stock.close()
 			cur_result.close()
