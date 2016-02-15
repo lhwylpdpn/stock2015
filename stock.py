@@ -46,7 +46,7 @@ def loadcsv ():#核心函数，查URL写数据库,计算指标库
 			close.append(row[5])
 			amount.append(row[6])
 		for i in range(len(date_)):
-			#sql=sql+"insert into stock_foreign.stock values ('"+filename[0:6]+"','"+date_[i]+"','"+time_[i]+"',null,null,null,'"+close[i]+"',null,0,null);"
+			sql=sql+"insert into stock_foreign.stock values ('"+filename[0:9]+"','"+date_[i]+"','"+time_[i]+"',null,null,null,'"+close[i]+"',null,0,null);"
 			sql=sql+"insert into stock_foreign.stock_back values ('"+filename[0:9]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"','"+high[i]+"','"+low[i]+"','"+close[i]+"',null,0,null);"
 
 		cur_stock.execute(sql)
