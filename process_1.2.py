@@ -28,8 +28,12 @@ def loadcsv_add():
 		filenode=open(filename)
 	except Exception as e:
 		print("Exception 了")
-		time.sleep(10)
-		filenode=open(filename)
+		try:
+			time.sleep(10)
+			filenode=open(filename)
+		except Exception as e:
+			time.sleep(10)
+			filenode=open(filename)
 	reader = csv.reader(filenode)
 	for row in reader:
 		name_.append(row[0])
@@ -174,7 +178,7 @@ def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
 	json=""
 	writelog("有订单生成，订单数"+str(len(stockid)))
 	for r in range(len(stockid)):
-		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(round(lnA_B_now[r]/100,3))+","+str(orderid[r][0:3])+"\n"
+		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(round(lnA_B_now[r]/125,3))+","+str(orderid[r][0:3])+"\n"
 
 	print("有订单生成",orderid,stockid)
 	file_object.write(json)
@@ -184,7 +188,7 @@ def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
 def result_DB(stockid,lnA_B_now,lnA_B_except,norm_now,norm_cha,orderid):
 	sql=""
 	for r in range(len(stockid)):
-		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(round(lnA_B_now[r]/100,3))+"');"
+		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(round(lnA_B_now[r]/125,3))+"');"
 	cur_result_DB.execute(sql)
 	cur_result_DB.close()
 
@@ -232,7 +236,7 @@ def decision(name,close,norm_list,commission):
 				#print(float(r[4]))
 				#print(float(r[5]))
 				#print(int(r[10]))
-				if  scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))>norm_list and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))<0.99  and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))<0.9 and float(r[4])<0.9 and float(r[5])<0.9 and int(r[10])>100 :
+				if  scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))>norm_list and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))<0.99  and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))<0.9 and float(r[4])<0.88 and float(r[5])<0.88 and int(r[10])>100 :
 					#print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5]))))
 					#print(float(r[3]))
 					#print(scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))
@@ -247,7 +251,7 @@ def decision(name,close,norm_list,commission):
 					orderid.append("0.9_"+str(time.time()+random.random()))
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
 
-				if  scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))<(1-norm_list) and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))>0.01 and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))>0.1 and float(r[4])>0.1 and float(r[5])>0.1 and int(r[10])>100:
+				if  scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))<(1-norm_list) and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))>0.01 and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))>0.1 and float(r[4])>0.12 and float(r[5])>0.12 and int(r[10])>100:
 					#print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))):
 					#print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5]))))
 					#print(float(r[3]))
