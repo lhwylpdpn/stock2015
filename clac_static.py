@@ -2,7 +2,7 @@
 import pymysql
 import os
 import time
-
+import mail
 def getInfo(processname):             #通过tasklist命令，找到processname的pid
 	word1=""
 	word2=""
@@ -22,17 +22,25 @@ def getInfo(processname):             #通过tasklist命令，找到processname�
 					word2=',"lmx_status":1'
 	if word1=="":
 		word1=',"jiasheng_status":0'
+		writelog("停止了")
+		mail.run("mail.ini","警报！！！,嘉盛程序断掉了"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
+
 	if word2=="":
 		word2=',"lmx_status":0'		
+		writelog("停止了")
+		mail.run("mail.ini","警报！！！,lmx程序断掉了"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 
 	write_json(word1+word2)
 
-
+def writelog(str):
+	file=open("mail.ini","a")
+	file.write(str+"\n")
+	file.close()	
 
 def  clac_json():
 	avg_num=[]
 	word3=""
-	conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_lmx',port=3306)
+	conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
 	cur_stock=conn.cursor()
 	sql="SELECT AVG(b) FROM (SELECT STR_TO_DATE(order_time_send,'%Y-%c-%d') AS a,COUNT(*) AS b FROM `order` GROUP BY STR_TO_DATE(order_time_send,'%Y-%c-%d') HAVING a>DATE_ADD(now(),INTERVAL -7 DAY)) a"
 	cur_stock.execute(sql)
@@ -40,13 +48,13 @@ def  clac_json():
 	for r in res:
 		word1=str(float(r[0]))
 
-	sql="SELECT SUM(CASE WHEN  lots_A=0.01 THEN 1 END )/COUNT(*) FROM `order_result` WHERE openA_time>'2016.01.25'  "
+	sql="SELECT SUM(CASE WHEN  lots_A=0.01 THEN 1 END )/COUNT(*) FROM `order_result`   "
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	for r in res:
 		word2=str(float(r[0]))
 	
-	sql="SELECT SUM(CASE WHEN  lots_A=0.01 THEN orderid END )/sum(orderid) FROM `order_result` WHERE openA_time>'2016.01.25'  "
+	sql="SELECT SUM(CASE WHEN  lots_A=0.01 THEN orderid END )/sum(orderid) FROM `order_result`    "
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	for r in res:
@@ -54,7 +62,7 @@ def  clac_json():
 
 
 
-	sql="SELECT nameA,SUM(CASE WHEN lots_A=0.01 THEN 1 END) AS a ,SUM(CASE WHEN lots_A=0.01 THEN 1 END)/COUNT(*) AS b,MAX(lots_A) c,AVG(CASE WHEN lots_A=0.01 THEN TIMESTAMPDIFF(MINUTE,openA_time,closeA_time) END) AS d,AVG(CASE WHEN lots_A<>0.01 THEN TIMESTAMPDIFF(MINUTE,openA_time,closeA_time) END) AS e ,ROUND(SUM(CASE WHEN lots_A=0.01 THEN orderid-0.08 END),2) AS f,ROUND(SUM(CASE WHEN lots_A<>0.01 THEN orderid-lots_A*0.08 END),2) AS g FROM order_result WHERE openA_time>'2016.01.25' GROUP BY nameA;"
+	sql="SELECT nameA,SUM(CASE WHEN lots_A=0.01 THEN 1 END) AS a ,SUM(CASE WHEN lots_A=0.01 THEN 1 END)/COUNT(*) AS b,MAX(lots_A) c,AVG(CASE WHEN lots_A=0.01 THEN TIMESTAMPDIFF(MINUTE,openA_time,closeA_time) END) AS d,AVG(CASE WHEN lots_A<>0.01 THEN TIMESTAMPDIFF(MINUTE,openA_time,closeA_time) END) AS e ,ROUND(SUM(CASE WHEN lots_A=0.01 THEN orderid END),2) AS f,ROUND(SUM(CASE WHEN lots_A<>0.01 THEN orderid END),2) AS g FROM order_result   GROUP BY nameA;"
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	for r in res:

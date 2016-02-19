@@ -330,7 +330,7 @@ if __name__ == "__main__":
 			print("step3 loadcsv_add_clear完成"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 			writelog("整体用时"+str(time.time()-time1))
 
-			mail.run("mail.ini",checkDB()+",我自己的测试结果测试结果,当前时间的")
+			#mail.run("mail.ini",checkDB()+",我自己的测试结果测试结果,当前时间的")
 			cur_stock.close()
 			cur_update_stock.close()
 			cur_result.close()
