@@ -77,22 +77,25 @@ if __name__ == "__main__":
 
 	while(3):
 		if len(getFileList("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/order"))>0:
-			
-			conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
-			cur_stock=conn.cursor()
-			cur_result=conn.cursor()
-			cur_d=conn.cursor()
-			cur_check=conn.cursor()
-			cur_result_DB=conn.cursor()
-			cur_stock_releation=conn.cursor()
-			load_report()
-			#mail.run("mail_result.ini","有平仓订单,请查看,具体内容暂时没打印")
-			cur_check.close()
-			cur_result.close()
-			cur_d.close()
-			cur_check.close()
-			cur_stock_releation.close()
-			conn.commit()
-			conn.close()
-	
+			try:
+
+				conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
+				cur_stock=conn.cursor()
+				cur_result=conn.cursor()
+				cur_d=conn.cursor()
+				cur_check=conn.cursor()
+				cur_result_DB=conn.cursor()
+				cur_stock_releation=conn.cursor()
+				load_report()
+				#mail.run("mail_result.ini","有平仓订单,请查看,具体内容暂时没打印")
+				cur_check.close()
+				cur_result.close()
+				cur_d.close()
+				cur_check.close()
+				cur_stock_releation.close()
+				conn.commit()
+				conn.close()
+			except Exception as e:
+
+				time.sleep(1)
 
