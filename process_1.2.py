@@ -43,7 +43,7 @@ def loadcsv_add():
 		close.append(row[3])
 	filenode.close()
 	#决策函数
-	decision(name_,close,0.88,0.0007)
+	decision(name_,close,0.88,0.0005)
 	print(len(date_))
 	for i in range(len(date_)):
 				
@@ -263,7 +263,7 @@ def decision(name,close,norm_list,commission):
 					stdA_B.append(float(r[3]))
 					lnA_B_now.append(float(close[name.index(str(r[0]))]))
 					norm_now.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3])))
-					lnA_B_except.append(scipy.stats.norm.ppf((1-norm_list+0.03),float(r[2]),float(r[3]))+commission)
+					lnA_B_except.append(scipy.stats.norm.ppf((1-norm_list+0.03),float(r[2]),float(r[3]))*(1+commission))
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
 					orderid.append("0.1_"+str(time.time()+random.random()))
 			#print(norm_now)

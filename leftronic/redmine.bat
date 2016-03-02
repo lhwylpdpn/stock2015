@@ -1,1 +1,0 @@
-curl -i -X POST -k -d "{\"accessKey\":\"Pk1yScCtX6zgTS9i9gb7SnIq7zbv2UHR\",\"streamName\":\"f7VeTllK\",\"point\":%1}" https://www.leftronic.com/customSend/
