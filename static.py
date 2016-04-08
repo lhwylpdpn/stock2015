@@ -25,7 +25,7 @@ def getFileList( p ):
 
 def load_report():
 	s=os.getcwd()
-	for filename in getFileList("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/order"):
+	for filename in getFileList(PWD+"/order"):
 		nameA=[]
 		openA=[]
 		openA_time=[]
@@ -43,8 +43,8 @@ def load_report():
 		ln_e_open=[]
 		ln_e_close=[]
 		sql=""
-		shutil.copy("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/order/"+filename,"C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/order/test/"+filename)
-		csvfile=open("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/order/test/"+filename)
+		shutil.copy(PWD+"/order/"+filename,PWD+"/order/test/"+filename)
+		csvfile=open(PWD+"/order/test/"+filename)
 		reader = csv.reader(csvfile)
 		for row in reader:
 			nameA.append(row[0])
@@ -65,7 +65,7 @@ def load_report():
 		#print(sql)
 		csvfile.close()
 		time.sleep(3)
-		os.remove("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/order/"+filename)
+		os.remove(PWD+"/order/"+filename)
 		cur_stock.execute(sql)
 def writelog(str):
 	file=open("mail_result.ini","a")
@@ -74,9 +74,13 @@ def writelog(str):
 
 
 if __name__ == "__main__":
-
+	global PWD
+	file=open("config.ini","r")
+	PWD=file.read()
+	file.close()
+	print(PWD)
 	while(3):
-		if len(getFileList("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/order"))>0:
+		if len(getFileList(PWD+"/order"))>0:
 			try:
 
 				conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)

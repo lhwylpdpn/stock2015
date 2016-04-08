@@ -296,41 +296,14 @@ def checkDB():
 		#if len(res)>0:
 			#for r in res:
 				#writelog("总共相关计算数："+str(r[0])+",最大相关数:"+str(r[1]))
+
+def test222():
+		print(PWD)
 									
 if __name__ == "__main__":
-
-	conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
-	cur_stock=conn.cursor()
-	cur_result=conn.cursor()
-	cur_d=conn.cursor()
-	cur_check=conn.cursor()
-	cur_stock_releation=conn.cursor()
-	cur_result_DB=conn.cursor()
-	cur_update_stock=conn.cursor()
-
-	sql="INSERT INTO test3 SELECT SYSDATE(), stockid,sample,close_now,avgA_B,stdA_B,norm_ln_prev,norm_ln_prev2,avg_cha,std_cha,norm_cha_prev, norm_cha_prev2 FROM test;delete from test"
-	cur_update_stock.execute(sql)
-	cur_result_DB.close()
-	cur_update_stock.close()
-	cur_result.close()
-	cur_d.close()
-	cur_check.close()
-	cur_stock_releation.close()
-	conn.commit()
-	conn.close()
-
-	# conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
-	# cur_stock=conn.cursor()
-	# cur_result=conn.cursor()
-	# cur_d=conn.cursor()
-	# cur_check=conn.cursor()
-	# cur_result_DB=conn.cursor()
-	# cur_stock_releation=conn.cursor()
-	# releation_mid(100,"releation_mid")
-	# cur_result.close()
-	# cur_d.close()
-	# cur_check.close()
-	# cur_result_DB.close()
-	# cur_stock_releation.close()
-	# conn.commit()
-	# conn.close()
+	global PWD
+	file=open("config.ini","r")
+	PWD=file.read()
+	file.close()
+	print(PWD)
+	test222()

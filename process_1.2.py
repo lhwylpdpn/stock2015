@@ -12,7 +12,7 @@ import time
 import random
 import mail
 def checktick():
-	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/tick.csv'
+	filename=PWD+'/tick.csv'
 	reader =os.path.getsize(filename)
 	writelog("tick函数运行情况："+str(reader))
 
@@ -22,7 +22,7 @@ def loadcsv_add():
 	name_=[]
 	date_=[]
 	time_=[]
-	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/price_record.csv'
+	filename=PWD+'/price_record.csv'
 	sql=""
 	try:
 		filenode=open(filename)
@@ -56,7 +56,7 @@ def loadcsv_add_clear():
 	# file_object = open(filename,'w')
 	# file_object.write("")
 	# file_object.close()
-	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/price_record.csv'
+	filename=PWD+'/price_record.csv'
 	os.remove(filename)
 
 def releation_mid(sample,tablename):#计算个股与指标之间的相关度
@@ -174,7 +174,7 @@ def stdev(self):
 
 
 def write_API(stockid,lnA_B_now,lnA_B_except,orderid,bucang):
-	file_object = open("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/create.txt",'w')
+	file_object = open(PWD+"/create.txt",'w')
 	json=""
 	writelog("有订单生成，订单数"+str(len(stockid)))
 	for r in range(len(stockid)):
@@ -294,9 +294,13 @@ def checkDB():
 				#writelog("总共相关计算数："+str(r[0])+",最大相关数:"+str(r[1]))
 									
 if __name__ == "__main__":
-
+	global PWD
+	file=open("config.ini","r")
+	PWD=file.read()
+	file.close()
+	print(PWD)
 	while(1):
-		if (os.path.exists("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/price_record.csv")!=0):
+		if (os.path.exists(PWD+"/price_record.csv")!=0):
 			conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
 			cur_stock=conn.cursor()
 			cur_result=conn.cursor()
