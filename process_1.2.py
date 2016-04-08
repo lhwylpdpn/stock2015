@@ -12,7 +12,7 @@ import time
 import random
 import mail
 def checktick():
-	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/tick.csv'
+	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/tick.csv'
 	reader =os.path.getsize(filename)
 	writelog("tick函数运行情况："+str(reader))
 
@@ -22,7 +22,7 @@ def loadcsv_add():
 	name_=[]
 	date_=[]
 	time_=[]
-	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv'
+	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/price_record.csv'
 	sql=""
 	try:
 		filenode=open(filename)
@@ -43,20 +43,20 @@ def loadcsv_add():
 		close.append(row[3])
 	filenode.close()
 	#决策函数
-	decision(name_,close,0.88,0.0005)
+	decision(name_,close,0.88,0.0006)
 	print(len(date_))
 	for i in range(len(date_)):
 				
-		sql=sql+"insert into stock_foreign.stock values ('"+name_[i]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"',0,0,'"+close[i]+"',0,0,null);"
+		sql=sql+"insert into stock values ('"+name_[i]+"','"+date_[i]+"','"+time_[i]+"','"+open_[i]+"',0,0,'"+close[i]+"',0,0,null);"
 	cur_stock.execute(sql)
 	cur_stock.close()
 
 def loadcsv_add_clear():
-	# filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/tick.csv'
+	# filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/tick.csv'
 	# file_object = open(filename,'w')
 	# file_object.write("")
 	# file_object.close()
-	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv'
+	filename='C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/price_record.csv'
 	os.remove(filename)
 
 def releation_mid(sample,tablename):#计算个股与指标之间的相关度
@@ -70,7 +70,7 @@ def releation_mid(sample,tablename):#计算个股与指标之间的相关度
 	a=[]
 	b=[]
 	#sql="SELECT stockid FROM stock_foreign.stock GROUP BY stockid;"
-	sql="SELECT stockid FROM stock_foreign.stock  GROUP BY stockid;"
+	sql="SELECT stockid FROM stock  GROUP BY stockid;"
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	print(str(tablename)+"函数内取出的值",len(res))
@@ -173,22 +173,22 @@ def stdev(self):
 
 
 
-def write_API(stockid,lnA_B_now,lnA_B_except,orderid):
-	file_object = open("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/create.txt",'w')
+def write_API(stockid,lnA_B_now,lnA_B_except,orderid,bucang):
+	file_object = open("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/create.txt",'w')
 	json=""
 	writelog("有订单生成，订单数"+str(len(stockid)))
 	for r in range(len(stockid)):
-		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(round(lnA_B_now[r]/125,3))+","+str(orderid[r][0:3])+"\n"
+		json=json+str(stockid[r])+","+str(round(lnA_B_now[r],5))+","+str(round(lnA_B_except[r],5))+","+str(orderid[r])+","+str(bucang[r])+","+str(orderid[r][0:3])+"\n"
 
 	print("有订单生成",orderid,stockid)
 	file_object.write(json)
 	file_object.close()
 
 #def clac_except():
-def result_DB(stockid,lnA_B_now,lnA_B_except,norm_now,norm_cha,orderid):
+def result_DB(stockid,lnA_B_now,lnA_B_except,norm_now,norm_cha,orderid,bucang):
 	sql=""
 	for r in range(len(stockid)):
-		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(round(lnA_B_now[r]/125,3))+"');"
+		sql=sql+"insert into `order` values ('"+str(orderid[r])+"','"+str(stockid[r])+"','"+time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+"','"+str(round(lnA_B_now[r],5))+"','"+str(round(lnA_B_except[r],5))+"','"+str(norm_now[r])+"','"+str(norm_cha[r])+"','"+str(bucang[r])+"');"
 	cur_result_DB.execute(sql)
 	cur_result_DB.close()
 
@@ -199,6 +199,7 @@ def update_M_flag(stockid,flag):
 	cur_update_stock.execute(sql)
 	cur_update_stock.close()
 def decision(name,close,norm_list,commission):
+	bucang=[]
 	stockA=[]
 	stockB=[]
 	releation=[]
@@ -218,7 +219,7 @@ def decision(name,close,norm_list,commission):
 		print("文件读入的数据中结构不正确,name和close不匹配")
 	else:
 
-		sql="SELECT a.stockid,a.close_now,a.avgA_B,a.stdA_B,a.norm_ln_prev,a.norm_ln_prev2,a.avg_cha,a.std_cha,a.norm_cha_prev,a.norm_cha_prev2,b.flag FROM `releation_mid` a ,model_config b where a.stockid=b.stockid and b.open_status=1"
+		sql="SELECT a.stockid,a.close_now,a.avgA_B,a.stdA_B,a.norm_ln_prev,a.norm_ln_prev2,a.avg_cha,a.std_cha,a.norm_cha_prev,a.norm_cha_prev2,b.flag,b.bucang_max FROM `releation_mid` a ,model_config b where a.stockid=b.stockid and b.open_status=1"
 		cur_d.execute(sql)
 		res=cur_d.fetchall()
 		print("decision",len(res))
@@ -250,7 +251,10 @@ def decision(name,close,norm_list,commission):
 					lnA_B_except.append(scipy.stats.norm.ppf(norm_list-0.03,float(r[2]),float(r[3])))
 					orderid.append("0.9_"+str(time.time()+random.random()))
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
-
+					if  float(close[name.index(str(r[0]))])/12500<=float(r[11]):
+						bucang.append(float(r[11]))
+					else:
+						bucang.append(round(float(close[name.index(str(r[0]))])/125,3))
 				if  scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))<(1-norm_list) and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))]),float(r[2]),float(r[3]))>0.01 and scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7]))>0.1 and float(r[4])>0.12 and float(r[5])>0.12 and int(r[10])>100:
 					#print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5])))):
 					#print(abs(scipy.stats.norm.cdf(math.log(float(close[name.index(str(r[0]))]))-math.log(float(close[name.index(str(r[1]))])),float(r[4]),float(r[5]))-scipy.stats.norm.cdf(float(r[3]),float(r[4]),float(r[5]))))
@@ -266,11 +270,15 @@ def decision(name,close,norm_list,commission):
 					lnA_B_except.append(scipy.stats.norm.ppf((1-norm_list+0.03),float(r[2]),float(r[3]))*(1+commission))
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
 					orderid.append("0.1_"+str(time.time()+random.random()))
+					if  float(close[name.index(str(r[0]))])/12500<=float(r[11]):
+						bucang.append(float(r[11]))
+					else:
+						bucang.append(round(float(close[name.index(str(r[0]))])/125,3))
 			#print(norm_now)
 		#如果releation>0.9 且 norm>0.99 就可以满足下单
 			if len(stockA)>0:
-				write_API(stockA,lnA_B_now,lnA_B_except,orderid)
-				result_DB(stockA,lnA_B_now,lnA_B_except,norm_now,norm_cha,orderid)
+				write_API(stockA,lnA_B_now,lnA_B_except,orderid,bucang)
+				result_DB(stockA,lnA_B_now,lnA_B_except,norm_now,norm_cha,orderid,bucang)
 			if len(update_stockid)>0:
 				update_M_flag(update_stockid,update_flag)
 def writelog(str):
@@ -288,7 +296,7 @@ def checkDB():
 if __name__ == "__main__":
 
 	while(1):
-		if (os.path.exists("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/EB3C3B239AFB8B62B7EC3451D269EB1E/MQL4/Files/price_record.csv")!=0):
+		if (os.path.exists("C:/Users/Administrator/AppData/Roaming/MetaQuotes/Terminal/50CA3DFB510CC5A8F28B48D1BF2A5702/MQL4/Files/price_record.csv")!=0):
 			conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
 			cur_stock=conn.cursor()
 			cur_result=conn.cursor()
