@@ -1,4 +1,4 @@
-#coding:utf-8
+﻿#coding:utf-8
 import pymysql
 import os
 import time
@@ -46,8 +46,6 @@ def  clac_json():
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	for r in res:
-		if 
-			pass
 		word1=str(r[0])
 
 	sql="SELECT SUM(CASE WHEN  lots_A=0.01 THEN 1 END )/COUNT(*) FROM `order_result`   "
@@ -75,18 +73,23 @@ def  clac_json():
 	word='{"avg_profit":1,"avg_profit_week":1,"success":'+word2+',"success_profit":'+word4+',"max_margin":0.23,"max_huiche":0.25,"avg_num":'+word1+',"table1":"'+word3+'"'
 	create_json(word)
 def  create_json(word):
-	file_object = open('json/static.json','w')
+	file_object = open(PWD+'/json/static.json','w')
 	file_object.write(word)
 	file_object.close()
 def  write_json(word):
-	file_object = open('json/static.json','a')
+	file_object = open(PWD+'/json/static.json','a')
 	file_object.write(word)
 	file_object.close()
 def  close_json():
-	file_object = open('json/static.json','a')
+	file_object = open(PWD+'/json/static.json','a')
 	file_object.write("}")
 	file_object.close()
 if __name__ == "__main__":
+	global PWD
+	file=open("config.ini","r")
+	PWD=file.read()
+	file.close()
+	print(PWD)
 	while(1):
 		clac_json()
 		getInfo("python.exe") 
