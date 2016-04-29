@@ -425,7 +425,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 	test_w=[]
 	res_all=0
 	res_now=0
-	sql="SELECT stockid FROM stock_back   GROUP BY stockid ;"
+	sql="SELECT stockid FROM history   GROUP BY stockid ;"
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	#print(len(res))
@@ -441,7 +441,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 		for i in range(len(stockid)):
 	
 			print("第一次数据查询"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
-			sql2="select DISTINCT a.date,a.time,a.close from stock_back  a   where a.stockid='"+stockid[i]+"'   ORDER BY  STR_TO_DATE(CONCAT(a.date,' ',a.TIME),'%Y.%c.%d %H:%i') "
+			sql2="select DISTINCT a.date,a.time,a.close from history  a   where a.stockid='"+stockid[i]+"'   ORDER BY  STR_TO_DATE(CONCAT(a.date,' ',a.TIME),'%Y%c%d %H%i') limit 10000"
 			cur_stock.execute(sql2)
 			res=cur_stock.fetchall()
 			print("第二次数据查询"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
@@ -483,7 +483,7 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 					avg_.append("")
 					stdev_.append("")
 					#norm_lncha.append("")
-				if norm_temp[r]!="" and norm_temp[r-1]!="" and norm_temp[r-2]!="" and norm_temp[r-3]!=""  and norm_temp[r-4]!="" and norm_temp[r-5]!="":
+				if norm_temp[r]!="" and norm_temp[r-1]!="" and norm_temp[r-2]!="":
 					if sum(norm_lncha[r-2:r+1])/len(norm_lncha[r-2:r+1])>0.9 or sum(norm_lncha[r-2:r+1])/len(norm_lncha[r-2:r+1])<0.1 :
 					#if abs(max(norm_temp[r],norm_temp[r-1],norm_temp[r-2],norm_temp[r-3],norm_temp[r-4])-min(norm_temp[r],norm_temp[r-1],norm_temp[r-2],norm_temp[r-3],norm_temp[r-4]))>0.6:
 						i_norm=0
@@ -492,7 +492,8 @@ def data_clear(sample,commission,norm_num):#补充指标函数
 			print("第一次计算"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 			if len(close_1)>=sample:
 			
-				run(stockid_i,date1,time1,lnA_B,lnA_B_sub,close_1,norm_,avg_,stdev_,sample,commission,norm_num,norm_lncha,norm_temp)
+				#run(stockid_i,date1,time1,lnA_B,lnA_B_sub,close_1,norm_,avg_,stdev_,sample,commission,norm_num,norm_lncha,norm_temp)
+				run_writetest(stockid_i,date1,time1,lnA_B,lnA_B_sub,close_1,norm_,avg_,stdev_,sample,commission,norm_num,norm_lncha,norm_temp)
 
 					#sql=sql+"insert into  model_data_model values('"+stockid[i]+"','"+stockid[j]+"','"+str(sample)+"','"+str(pearson_[r])+"','"+str(lnA_B[r])+"','"+str(lnA_BsubC[r])+"','"+str(lnA_BaddC[r])+"','"+str(commission)+"','"+str(norm_[r])+"','"+str(norm_num)+"','"+str(date1[r])+"','"+str(time1[r])+"');"
 			else:
@@ -581,7 +582,7 @@ def stdev(self):
 # 测试函数
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-def run_writetest(stockid_i,date1,time1,lnA_B,lnA_B_sub,close_1,norm_,avg_,stdev_,sample,commission,norm_num,norm_lncha,norm_temp,test_w):
+def run_writetest(stockid_i,date1,time1,lnA_B,lnA_B_sub,close_1,norm_,avg_,stdev_,sample,commission,norm_num,norm_lncha,norm_temp):
 	file_object = open('test/testcase.csv','w')
 
 	file_object.write("stockid_i,date1,time1,lnA_B,lnA_B_sub,close_1,norm_,avg_,stdev_,sample,commission,norm_num,norm_lncha,norm_temp"+"\n")
@@ -613,7 +614,7 @@ def run_writetest(stockid_i,date1,time1,lnA_B,lnA_B_sub,close_1,norm_,avg_,stdev
 if __name__ == "__main__":
 
 
-	conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='stock_foreign',port=3306)
+	conn=pymysql.connect(host='localhost',user='root',passwd='123456',db='test',port=3306)
 	cur_stock=conn.cursor()
 	cur_result=conn.cursor()
 	cur_d=conn.cursor()
