@@ -1,4 +1,4 @@
-﻿#coding:utf-8
+#coding:utf-8
 import pymysql
 import os
 import time
@@ -18,17 +18,17 @@ def getInfo(processname):             #通过tasklist命令，找到processname�
 				word="E:\BaiduYunDownload\phpStudy\WWW\\forlining\\task.py"
 				if r.find("C:\github\stock2015\process_1.2.py")!=-1:
 					word1=',"jiasheng_status":1'
-				# if r.find("C:\github\stock2016forlmx\process_1.2_forlmx.py")!=-1:
-				# 	word2=',"lmx_status":1'
+				if r.find("C:\github\stock2016forlmx\process_1.2_forlmx.py")!=-1:
+					word2=',"lmx_status":1'
 	if word1=="":
 		word1=',"jiasheng_status":0'
 		writelog("停止了")
-		mail.run("mail.ini","警报！！！,程序断掉了"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
+		mail.run("mail.ini","警报！！！,嘉盛程序断掉了"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 
 	if word2=="":
 		word2=',"lmx_status":0'		
-		# writelog("停止了")
-		# mail.run("mail.ini","警报！！！,lmx程序断掉了"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
+		writelog("停止了")
+		mail.run("mail.ini","警报！！！,lmx程序断掉了"+str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))))
 
 	write_json(word1+word2)
 
@@ -46,19 +46,19 @@ def  clac_json():
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	for r in res:
-		word1=str(r[0])
+		word1=str(float(0))
 
 	sql="SELECT SUM(CASE WHEN  lots_A=0.01 THEN 1 END )/COUNT(*) FROM `order_result`   "
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	for r in res:
-		word2=str(r[0])
+		word2=str(float(0))
 	
 	sql="SELECT SUM(CASE WHEN  lots_A=0.01 THEN orderid END )/sum(orderid) FROM `order_result`    "
 	cur_stock.execute(sql)
 	res=cur_stock.fetchall()
 	for r in res:
-		word4=str(r[0])
+		word4=str(float(0))
 
 
 	word3=""
