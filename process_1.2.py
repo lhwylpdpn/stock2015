@@ -147,6 +147,7 @@ def pearson(x,y):
 	return r
 
 
+
 def st_norm(u):
 	x=abs(u)/math.sqrt(2)
 	T=(0.0705230784,0.0422820123,0.0092705272,0.0001520143,0.0002765672,0.0000430638)
@@ -250,7 +251,7 @@ def decision(name,close,norm_list,commission):
 					lnA_B_except.append(scipy.stats.norm.ppf(norm_list-0.03,float(r[2]),float(r[3])))
 					orderid.append("0.9_"+str(time.time()+random.random()))
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
-					if  float(close[name.index(str(r[0]))])/12500<=float(r[11]):
+					if  float(close[name.index(str(r[0]))])/125<=float(r[11]):
 						bucang.append(float(r[11]))
 					else:
 						bucang.append(round(float(close[name.index(str(r[0]))])/125,3))
@@ -269,7 +270,7 @@ def decision(name,close,norm_list,commission):
 					lnA_B_except.append(scipy.stats.norm.ppf((1-norm_list+0.03),float(r[2]),float(r[3]))*(1+commission))
 					norm_cha.append(scipy.stats.norm.cdf(float(close[name.index(str(r[0]))])-float(r[1]),float(r[6]),float(r[7])))
 					orderid.append("0.1_"+str(time.time()+random.random()))
-					if  float(close[name.index(str(r[0]))])/12500<=float(r[11]):
+					if  float(close[name.index(str(r[0]))])/125<=float(r[11]):
 						bucang.append(float(r[11]))
 					else:
 						bucang.append(round(float(close[name.index(str(r[0]))])/125,3))
